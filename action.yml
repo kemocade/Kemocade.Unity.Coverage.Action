@@ -1,4 +1,4 @@
-name: 'Validate Unity Tests.'
+name: 'Kemocade Unity Coverage Action'
 description: 'A GitHub Action code coverage quality gate for Unity Code Coverage tools.'
 branding:
   icon: check
