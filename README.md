@@ -34,7 +34,7 @@ on:
 jobs:
 
 ```
-This untiy code coverage action dependes on artifacts from the test job, set that job to run first. Great documentation on how to setup and activate unity inside an action container has been made available by the [untiy-actions repo author webbertakken](https://github.com/webbertakken/unity-actions).
+This Unity code coverage action dependes on artifacts from the test job, set that job to run first. Great documentation on how to setup and activate unity inside an action container has been made available by the [untiy-actions repo author webbertakken](https://github.com/webbertakken/unity-actions).
 
 ```
   test:
