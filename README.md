@@ -57,11 +57,14 @@ This untiy code coverage action dependes on artifacts from the test job, set tha
           Library-Hex-
     
     # Test
-    - name: Run Unity Tests
-      uses: AnImaginedReality/UntiyTestRunner.Action@v1.6.1 
+    - name: Test Runner
+      uses: game-ci/unity-test-runner@v3.0.0
       env:
-        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
       with:
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
         projectPath: ./
         unityVersion: 2019.3.4f1
 
@@ -89,7 +92,7 @@ Once the tests job has run, and the artifacts have been uploaded, a job for this
       
         # Ensure code coverage exceeds required coverage.
         - name: Check Code Coverage
-          uses: AnImaginedReality/UnityCodeCoverage.Action@v0.0.4
+          uses: kemocade/Kemocade.Unity.Coverage.Action@1.0.0
           with:
-            required-coverage: 25
             coverage-file-path: ./artifacts/CodeCoverage/Report/Summary.xml
+            required-coverage: 25
