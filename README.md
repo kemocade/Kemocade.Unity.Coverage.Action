@@ -1,9 +1,9 @@
-# UntiyTestCoverage.Action
+# Kemocade Unity Coverage Action
 A github action for running unity test coverage quality gate.
-
-# Unity code coverage action
-
 This github action parses the output of the [unity code coverage package](https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@0.2/manual/CoverageTestRunner.html) and fails the action/github pull requests, if code coverage requirements are not met.
+
+Forked from [UnityCodeCoverage.Action](https://github.com/ActuatorDigital/UnityCodeCoverage.Action).
+Updated to .NET 7 & C# 11.0 by [Dustuu](https://github.com/dustuu) from [Kemocade](https://github.com/kemocade).
 
 ## Inputs
 
@@ -36,7 +36,6 @@ jobs:
 ```
 This untiy code coverage action dependes on artifacts from the test job, set that job to run first. Great documentation on how to setup and activate unity inside an action container has been made available by the [untiy-actions repo author webbertakken](https://github.com/webbertakken/unity-actions).
 
-AIR's fork of this repo [AnImaginedReality/UntiyTestRunner.Action@v1.6.1 ](https://github.com/AnImaginedReality/UntiyTestRunner.Action) adds unity code coverage support to his github action.
 ```
   test:
     # The type of runner that the job will run on
@@ -94,4 +93,3 @@ Once the tests job has run, and the artifacts have been uploaded, a job for this
           with:
             required-coverage: 25
             coverage-file-path: ./artifacts/CodeCoverage/Report/Summary.xml
-```

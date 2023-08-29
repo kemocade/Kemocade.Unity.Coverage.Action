@@ -1,5 +1,8 @@
 name: 'Validate Unity Tests.'
 description: 'A GitHub Action code coverage quality gate for Unity Code Coverage tools.'
+branding:
+  icon: check
+  color: green
 inputs:
   coverage-file-path:
     description: 'The path of the coverage file to parse.'
@@ -13,4 +16,7 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.required-coverage }} ${{ inputs.coverage-file-path }}
+    - '-p'
+    - ${{ inputs.coverage-file-path }}
+    - '-r'
+    - ${{ inputs.required-coverage }}
