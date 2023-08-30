@@ -1,6 +1,6 @@
 # Kemocade Unity Coverage Action
-A github action for running unity test coverage quality gate.
-This github action parses the output of the [unity code coverage package](https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@0.2/manual/CoverageTestRunner.html) and fails the action/github pull requests, if code coverage requirements are not met.
+A GitHub Action for enforcing Unity Test Code Coverage.
+This GitHub Action parses the output of the [Unity Code Coverage Package](https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@0.2/manual/CoverageTestRunner) and fails the action/github pull requests if Code Coverage requirements are not met.
 
 Forked from [UnityCodeCoverage.Action](https://github.com/ActuatorDigital/UnityCodeCoverage.Action).
 Updated to .NET 7 & C# 11.0 by [Dustuu](https://github.com/dustuu) from [Kemocade](https://github.com/kemocade).
@@ -18,81 +18,48 @@ The minimum percentage of code coverage requried for the action to sucessfully c
 Default: 75
 
 ## Example usage
-First, if you haven't already, set up a new build action in your project's /.github/workflows/main.yml. 
-```
-name: Unity CI 
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
-on:
-  push:
-    branches: [ develop, master, release ]
-  pull_request:
-    branches: [ develop, master, release ]
+> :warning: **As of August 2023, Unity has ended support for offline activation of Personal Licenses.**
+> Due to this change, the `game-ci/unity-test-runner` step will now only work with Unity Plus or Unity Pro Licenses.
+> You can still run Unit Tests manually from within the Unity Editor with a Personal License.
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+Create repository secrets with the names and values described below.
+For details on how to create repository secrets, see [Creating Encrypted Secrets for a Repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+This time, make sure you are creating **repository secrets**, and not **repository variables**.
+
+> :warning: **These secrets contain sensitive information that could compromise your Unity account if exposed!**
+> To keep them safe, you should only ever input these values as GitHub Actions encrypted secrets!
+> Never commit these secrets directly to source control!
+
+* `UNITY_EMAIL`: The email address associated with your Unity account.
+* `UNITY_PASSWORD`: The password for your Unity account.
+* `UNITY_SERIAL`: Your Unity Plus or Unity Pro serial number.
+  * For more information, see ["How do I find my license serial number?"](https://support.unity.com/hc/articles/209933966-How-do-I-find-my-license-serial-number).
+
+```yml
 jobs:
-
-```
-This Unity code coverage action dependes on artifacts from the test job, set that job to run first. Great documentation on how to setup and activate unity inside an action container has been made available by the [untiy-actions repo author webbertakken](https://github.com/webbertakken/unity-actions).
-
-```
   test:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    permissions:
+      contents: write
+      checks: write
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Clone Repo
-      uses: actions/checkout@v2
-
-    # Cache unity Library folder from previous builds.
-    - name: Restore Unity Library Folder
-      uses: actions/cache@v1.1.0
-      with:
-        path: ./Library
-        key: Library-Hex-UNITY_STANDALONE_LINUX
-        restore-keys:  |
-          Library-Hex-
-    
-    # Test
+    # Run the Unit Tests and generate the Code Coverage report
     - name: Test Runner
-      uses: game-ci/unity-test-runner@v3.0.0
+      id: runner
+      uses: game-ci/unity-test-runner@9d0bc623a78ee101f2c8956460d73bba2dfcf0c4
       env:
         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
       with:
+        projectPath: path/to/your/project
         githubToken: ${{ secrets.GITHUB_TOKEN }}
-        projectPath: ./
-        unityVersion: 2019.3.4f1
-
-    - name: Save Test Result Artifacts 
-      uses: actions/upload-artifact@v1
+        
+    # Ensure that the Code Coverage report meets the user's configured requirements
+    - name: Enforce Code Coverage
+      uses: kemocade/Kemocade.Unity.Coverage.Action@ad06420f6fbb107bb3aa37f41fb99c79a3f93ad3
       with:
-          name: Test results
-          path: artifacts
+        coverage-file-path: ${{ steps.runner.outputs.coveragePath }}/Report/Summary.xml
+        required-coverage: 100
 ```
-Once the tests job has run, and the artifacts have been uploaded, a job for this repo's action can be run to assert code coverage requirements are met.
-```
-  code-coverage:
-      # The type of runner that the job will run on
-      name: coverage
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-        - name: Load Test Result Artifacts 
-          uses: actions/download-artifact@v1
-          with:
-              name: Test results
-              path: artifacts
-        - shell: bash
-          run: cat ./artifacts/CodeCoverage/Report/Summary.xml
-      
-        # Ensure code coverage exceeds required coverage.
-        - name: Check Code Coverage
-          uses: kemocade/Kemocade.Unity.Coverage.Action@1.0.0
-          with:
-            coverage-file-path: ./artifacts/CodeCoverage/Report/Summary.xml
-            required-coverage: 25
