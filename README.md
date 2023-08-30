@@ -10,12 +10,12 @@ Updated to .NET 7 & C# 11.0 by [Dustuu](https://github.com/dustuu) from [Kemocad
 ### `coverage-file-path` - **Required** 
 The path of the coverage file to parse.
 
-Default: './artifacts/CodeCoverage/Report/Summary.xml'
+Default: `./artifacts/CodeCoverage/Report/Summary.xml`
 
 ### `required-coverage` - **Required**
 The minimum percentage of code coverage requried for the action to sucessfully complete. 
 
-Default: 75
+Default: `75`
 
 ## Example usage
 
